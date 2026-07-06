@@ -65,3 +65,29 @@ if leftover:
 out = ROOT / "peacepans-site.html"
 out.write_text(html)
 print(f"wrote {out} ({out.stat().st_size/1024/1024:.2f} MB)")
+
+# hosted variant: full document with viewport + share meta (artifact variant stays headless)
+TITLE = "PeacePans · Handpan Atelier, Hamilton"
+body = re.sub(r"^<title>[^<]*</title>\n", "", html)
+head = f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{TITLE}</title>
+<meta name="description" content="Handpans built and tuned by hand by Luc Dupuis in Hamilton, Ontario. Custom PeacePan commissions from CA$2,700 and the ready-to-order CanPan series from CA$1,500. Lifetime tuning warranty on every instrument.">
+<meta property="og:title" content="{TITLE}">
+<meta property="og:description" content="Steel that learned to sing. Handpans shaped, hammered, and tuned by hand in Canada's Steel City.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://actionh3ro.github.io/peace-pans/">
+<meta property="og:image" content="https://actionh3ro.github.io/peace-pans/build/colors.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#12100E">
+<link rel="icon" type="image/png" href="build/mark.png">
+<link rel="apple-touch-icon" href="build/logo.png">
+</head>
+<body>
+"""
+idx = ROOT / "index.html"
+idx.write_text(head + body + "\n</body>\n</html>\n")
+print(f"wrote {idx} ({idx.stat().st_size/1024/1024:.2f} MB)")

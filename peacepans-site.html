@@ -107,6 +107,9 @@ section{position:relative}
 .light .btn{background:var(--ink);color:var(--plaster);border-color:var(--ink)}
 .light .btn:hover{background:transparent;color:var(--ink)}
 a:focus-visible,button:focus-visible{outline:2px solid var(--copper);outline-offset:4px}
+@media(max-width:480px){
+  .btn,.btn-ghost{width:100%;justify-content:space-between;padding:1.1rem 1.4rem;align-self:stretch}
+}
 
 /* image frames */
 .frame{position:relative;overflow:hidden;background:var(--forge-2)}
@@ -180,9 +183,10 @@ header.scrolled{background:rgba(16,14,12,.82);backdrop-filter:blur(14px);-webkit
 .hero-inner{position:relative;width:100%;padding-bottom:clamp(2.5rem,5vh,4.5rem)}
 .hero-copy{max-width:44rem}
 .hero h1{font-size:clamp(3.4rem,10.5vw,9.2rem);margin:1.6rem 0 2.2rem;text-shadow:0 2px 40px rgba(10,9,8,.6)}
-.hero-sub{max-width:32rem;color:var(--bone-dim);font-size:1.0625rem;line-height:1.65;font-weight:400}
+.hero-sub{max-width:32rem;color:var(--bone-dim);font-size:1.0625rem;line-height:1.65;font-weight:400;text-wrap:pretty}
+.sec-head .side,.prose p,.steps p,.qa .ans p{text-wrap:pretty}
 .hero-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:2.2rem;margin-top:2.6rem}
-.hero-meta{display:flex;gap:3.5rem;margin-top:3.4rem;padding-top:1.6rem;border-top:1px solid var(--hair-d)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:1.6rem 3.5rem;margin-top:3.4rem;padding-top:1.6rem;border-top:1px solid var(--hair-d)}
 .hero-meta div p:first-child{font-size:.625rem;letter-spacing:.26em;text-transform:uppercase;color:var(--bone-dim);margin-bottom:.4rem}
 .hero-meta div p:last-child{font-family:var(--font-d);font-style:italic;font-size:1.05rem;font-weight:360}
 @media(max-width:999px){
@@ -205,7 +209,8 @@ header.scrolled{background:rgba(16,14,12,.82);backdrop-filter:blur(14px);-webkit
 .stat:nth-child(odd){border-right:1px solid var(--hair-d)}
 .stat:nth-child(-n+2){border-top:0}
 .stat .num{font-family:var(--font-d);font-weight:330;font-size:clamp(3.2rem,6vw,5.2rem);
-  line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(max-width:480px){.stat .num{font-size:2.7rem}}
 .stat .num i{font-style:italic;font-size:.55em;color:var(--copper)}
 .stat .lbl{margin-top:1rem;font-size:.6875rem;letter-spacing:.24em;text-transform:uppercase;font-weight:500}
 .stat .cap{margin-top:.55rem;font-family:var(--font-d);font-style:italic;font-size:.9375rem;color:var(--bone-dim)}
@@ -329,9 +334,12 @@ header.scrolled{background:rgba(16,14,12,.82);backdrop-filter:blur(14px);-webkit
 .qa:last-of-type{border-bottom:1px solid var(--hair-l)}
 .qa button{display:grid;grid-template-columns:3.2rem 1fr 2rem;align-items:baseline;gap:1.2rem;
   width:100%;text-align:left;padding:1.9rem 0}
-.qa .qn{font-family:var(--font-d);font-style:italic;font-weight:330;font-size:1.1rem;color:var(--ink-dim)}
+.qa .qn{font-family:var(--font-d);font-style:italic;font-weight:330;font-size:1.1rem;color:var(--ink-dim);
+  transition:color .4s var(--ease)}
 .qa h3{font-family:var(--font-d);font-style:italic;font-weight:360;font-size:clamp(1.35rem,2.6vw,2.1rem);
-  letter-spacing:-.01em;line-height:1.2}
+  letter-spacing:-.01em;line-height:1.2;text-wrap:balance;transition:transform .5s var(--ease)}
+.qa button:hover .qn{color:var(--copper)}
+.qa button:hover h3{transform:translateX(6px)}
 .qa .mark{position:relative;width:1.05rem;height:1.05rem;justify-self:end;align-self:center;
   transition:transform .6s var(--ease)}
 .qa .mark::before,.qa .mark::after{content:"";position:absolute;background:currentColor;inset:50% auto auto 0;
@@ -849,8 +857,9 @@ footer{background:var(--forge-3);border-top:1px solid var(--hair-d)}
   }, {threshold:.6});
   document.querySelectorAll('[data-count]').forEach(function(el){ cio.observe(el); });
 
-  /* ---- parallax ---- */
+  /* ---- parallax + hero disc rotation ---- */
   var plx = [].slice.call(document.querySelectorAll('[data-plx]'));
+  var discImg = document.querySelector('.hero-stage .disc img');
   if(!reduced && plx.length){
     var ticking = false;
     function frame(){
@@ -863,6 +872,10 @@ footer{background:var(--forge-3);border-top:1px solid var(--hair-d)}
         var y = prog * (+el.dataset.speed) * vh * -2;
         el.style.transform = 'translate3d(0,' + y.toFixed(1) + 'px,0)';
       });
+      /* the instrument turns slowly on the bench as you scroll */
+      if(discImg && scrollY < vh * 2){
+        discImg.style.transform = 'scale(1.06) rotate(' + (scrollY * 0.014).toFixed(2) + 'deg)';
+      }
     }
     addEventListener('scroll', function(){ if(!ticking){ ticking = true; requestAnimationFrame(frame); } }, {passive:true});
     frame();
